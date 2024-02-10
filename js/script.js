@@ -1,53 +1,47 @@
-document.getElementById('loginForm').addEventListener('submit', function(event) {
-    event.preventDefault(); 
-
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-
-    const username = usernameInput.value;
-    const password = passwordInput.value;
-
-    if (!username || !password) {
-        alert("Por favor, preencha todos os campos.");
-        return;
-    }
-
-    // URL da API
-    const apiUrl = 'http://191.252.178.166:8080';
-
-    const requestData = {
-        username: username,
-        password: password
-    };
-
-    // Criar uma nova solicitação
-    const request = new XMLHttpRequest();
-
-    // Configurar a solicitação POST para a URL da API
-    request.open('POST', apiUrl, true); 
-
-    // Configurar o cabeçalho Content-Type
-    request.setRequestHeader('Content-Type', 'application/json');
-
-    request.onload = function() {
-        if (request.status >= 200 && request.status < 400) {
-            const data = JSON.parse(request.responseText);
-            // Exibir mensagem retornada pela API
-            alert(data.message);
-
-            if (request.status === 200) {
-                // Redirecionar para sucesso.html se o login for bem-sucedido
-                window.location.href = 'sucesso.html'; 
-            }
-        } else {
-            alert("Erro ao processar a solicitação. Por favor, tente novamente mais tarde.");
-        }
-    };
-
-    request.onerror = function() {
-        alert("Erro ao processar a solicitação. Por favor, tente novamente mais tarde.");
-    };
-
-    // Enviar dados do formulário para a API em formato JSON
-    request.send(JSON.stringify(requestData)); 
-});
+document.getElementById('login-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+  
+    // Exibir indicador de carregamento
+    document.getElementById('loadingIndicator').style.display = 'block';
+  
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+  
+    const data = { username, password };
+    
+    // Enviar requisição para o servidor intermediário
+    fetch('http://191.252.178.166:8080/auth', { // Modifique para o endereço do seu servidor intermediário
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => {
+      // Esconder indicador de carregamento
+      document.getElementById('loadingIndicator').style.display = 'none';
+      
+      if (!response.ok) {
+        throw new Error('Erro ao efetuar login');
+      }
+      return response.json();
+    })
+    .then(responseData => {
+      // Exibir mensagem de sucesso
+      document.getElementById('message').textContent = responseData.message;
+      
+      // Redirecionar para success.html após 2 segundos
+      setTimeout(function() {
+        window.location.href = 'success.html';
+      }, 2000); // 2000 milissegundos = 2 segundos
+    })
+    .catch(error => {
+      // Esconder indicador de carregamento em caso de erro
+      document.getElementById('loadingIndicator').style.display = 'none';
+      
+      // Exibir mensagem de erro
+      console.error('Erro:', error);
+      document.getElementById('message').textContent = 'Erro ao tentar efetuar o login. Por favor, tente novamente mais tarde.';
+    });
+  });
+  
