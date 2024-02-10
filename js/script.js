@@ -8,15 +8,17 @@ document.getElementById('login-form').addEventListener('submit', function(event)
     const password = document.getElementById('password').value;
   
     const data = { username, password };
-    
+
+    const url = 'http://191.252.178.166:8080/auth';
+
     // Enviar requisição para o servidor intermediário
-    fetch('http://191.252.178.166:8080/auth', { // Modifique para o endereço do seu servidor intermediário
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
+    fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })      
     .then(response => {
       // Esconder indicador de carregamento
       document.getElementById('loadingIndicator').style.display = 'none';
@@ -30,10 +32,10 @@ document.getElementById('login-form').addEventListener('submit', function(event)
       // Exibir mensagem de sucesso
       document.getElementById('message').textContent = responseData.message;
       
-      // Redirecionar para success.html após 2 segundos
+      // Redirecionar depois de 2 segundos
       setTimeout(function() {
         window.location.href = 'success.html';
-      }, 2000); // 2000 milissegundos = 2 segundos
+      }, 2000);
     })
     .catch(error => {
       // Esconder indicador de carregamento em caso de erro
